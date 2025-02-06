@@ -1,6 +1,6 @@
 "use client";
 import React, { createContext, useState } from "react";
-import { Todo } from "@/types/todo";
+import { Category, Todo } from "@/types/todo";
 
 interface TodoContextProps {
   children: React.ReactNode;
@@ -9,6 +9,8 @@ interface TodoContextProps {
 interface TodoContextType {
   todos: Todo[];
   setTodos: (todo: Todo[]) => void;
+  categories: Category[];
+  setCategories: (category: Category[]) => void;
 }
 
 export const TodoContext = createContext<TodoContextType>({
@@ -16,12 +18,19 @@ export const TodoContext = createContext<TodoContextType>({
   setTodos: (todo: Todo[]) => {
     console.log(todo);
   },
+  categories: [],
+  setCategories: (category: Category[]) => {
+    console.log(category);
+  },
 });
 
 const TodoContextProvider = ({ children }: TodoContextProps) => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   return (
-    <TodoContext.Provider value={{ todos, setTodos }}>
+    <TodoContext.Provider
+      value={{ todos, setTodos, categories, setCategories }}
+    >
       {children}
     </TodoContext.Provider>
   );

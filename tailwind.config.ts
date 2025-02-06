@@ -58,5 +58,11 @@ export default {
   		}
   	}
   },
+  safelist: [
+    {
+      pattern: /bg-(red|green|blue|yellow|purple|pink|indigo|gray|black|white)-(100|200|300|400|500|600|700|800|900)/,
+      variants: ['hover', 'focus', 'active'],
+    },
+  ],
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;

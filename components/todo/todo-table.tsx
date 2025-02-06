@@ -15,6 +15,7 @@ import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { XIcon } from "lucide-react";
 import { Todo } from "@/types/todo";
+import { Badge } from "../ui/badge";
 export function TodoTable() {
   const { todos, setTodos } = useContext(TodoContext);
   const handleDelete = ({ id }: Todo) => {
@@ -26,17 +27,29 @@ export function TodoTable() {
       <TableHeader>
         <TableRow>
           <TableHead className="w-10" />
-          <TableHead className="w-[100px]">Todo</TableHead>
+          <TableHead className="w-auto">Todo</TableHead>
           <TableHead className="w-10" />
         </TableRow>
       </TableHeader>
       <TableBody key={todos.length}>
-        {todos.map(({ id, todo }, index) => (
-          <TableRow key={id || index}>
+        {todos.map(({ id, todo, categories }) => (
+          <TableRow key={id}>
             <TableCell className="w-fit">
               <Checkbox />
             </TableCell>
-            <TableCell className="font-medium">{todo}</TableCell>
+            <TableCell className="font-medium">
+              <span className="inline-flex items-center gap-1">
+                {categories?.map((category) => (
+                  <Badge
+                    key={category.id}
+                    className={`${category.color} text-white w-fit whitespace-nowrap`}
+                  >
+                    {category.title}
+                  </Badge>
+                ))}
+                <span>{todo}</span>
+              </span>
+            </TableCell>
             <TableCell
               className="text-right"
               onClick={() => handleDelete({ id, todo })}
