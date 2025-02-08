@@ -20,9 +20,7 @@ const TodoForm = () => {
   const { todos, setTodos, categories, setCategories } =
     useContext(TodoContext);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [suggestions, setSuggestions] = React.useState<string[]>([]);
-  const [selectedSuggestion, setSelectedSuggestion] =
-    React.useState<number>(-1);
+  React.useState<number>(-1);
   const todoForm = useForm<z.infer<typeof todoFormSchema>>({
     resolver: zodResolver(todoFormSchema),
     defaultValues: {
@@ -43,7 +41,6 @@ const TodoForm = () => {
 
   const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Backspace") {
-      const todo = todoForm.getValues("todo");
       const cursorPosition = inputRef.current?.selectionStart || 0;
       if (cursorPosition === 0) {
         const categoriesMinusLast = categories.slice(0, -1);
@@ -75,7 +72,6 @@ const TodoForm = () => {
     if (e.key === "Tab") {
       e.preventDefault();
       const todo = todoForm.getValues("todo");
-      const cursorPosition = inputRef.current?.selectionStart || 0;
 
       // Find any brackets in the text
       const openBracketPos = todo.lastIndexOf("[");
