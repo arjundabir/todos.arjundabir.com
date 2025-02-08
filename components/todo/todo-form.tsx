@@ -20,6 +20,9 @@ const TodoForm = () => {
   const { todos, setTodos, categories, setCategories } =
     useContext(TodoContext);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [suggestions, setSuggestions] = React.useState<string[]>([]);
+  const [selectedSuggestion, setSelectedSuggestion] =
+    React.useState<number>(-1);
   const todoForm = useForm<z.infer<typeof todoFormSchema>>({
     resolver: zodResolver(todoFormSchema),
     defaultValues: {
@@ -39,55 +42,105 @@ const TodoForm = () => {
   };
 
   const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "[") {
+    if (e.key === "Backspace") {
       const todo = todoForm.getValues("todo");
       const cursorPosition = inputRef.current?.selectionStart || 0;
-      const newTodo =
-        todo.slice(0, cursorPosition) + "]" + todo.slice(cursorPosition);
-      todoForm.setValue("todo", newTodo);
-
-      setTimeout(() => {
-        inputRef.current?.setSelectionRange(cursorPosition, cursorPosition);
-      }, 0);
+      if (cursorPosition === 0) {
+        const categoriesMinusLast = categories.slice(0, -1);
+        setCategories(categoriesMinusLast);
+      }
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "[") {
+      e.preventDefault(); // Prevent the [ from being typed
+      const todo = todoForm.getValues("todo");
+      const cursorPosition = inputRef.current?.selectionStart || 0;
+
+      // Insert [] at cursor position
+      const newTodo =
+        todo.slice(0, cursorPosition) + "[]" + todo.slice(cursorPosition);
+      todoForm.setValue("todo", newTodo);
+
+      // Place cursor between brackets
+      setTimeout(() => {
+        inputRef.current?.setSelectionRange(
+          cursorPosition + 1,
+          cursorPosition + 1
+        );
+      }, 0);
+      return;
+    }
     if (e.key === "Tab") {
       e.preventDefault();
       const todo = todoForm.getValues("todo");
       const cursorPosition = inputRef.current?.selectionStart || 0;
 
-      // Find the nearest [ before the cursor
-      const openBracketPos = todo.lastIndexOf("[", cursorPosition);
-      // Find the nearest ] after the cursor
-      const closeBracketPos = todo.indexOf("]", cursorPosition);
+      // Find any brackets in the text
+      const openBracketPos = todo.lastIndexOf("[");
+      const closeBracketPos = todo.indexOf("]", openBracketPos);
 
-      // Check if cursor is between brackets and there's text of length > 1
-      if (
-        openBracketPos !== -1 &&
-        closeBracketPos !== -1 &&
-        cursorPosition > openBracketPos &&
-        cursorPosition <= closeBracketPos
-      ) {
-        const categoryTitle = todo
+      if (openBracketPos !== -1 && closeBracketPos !== -1) {
+        const currentInput = todo
           .slice(openBracketPos + 1, closeBracketPos)
-          .trim();
+          .trim()
+          .toLowerCase();
 
-        if (categoryTitle.length > 1) {
-          // Add to categories
-          setCategories([
-            ...categories,
-            {
-              id: todos.length + 1,
-              title: categoryTitle,
-              color: getRandomColor(),
-            },
-          ]);
+        if (currentInput.length > 0) {
+          // Get all existing categories from todos
+          const todoCategories = todos.flatMap(({ categories }) => categories!);
 
-          // Remove the bracketed text from the input
+          // Look for partial matches first, regardless of cursor position
+          const matchingCategory = todoCategories.find((cat) =>
+            cat.title.toLowerCase().startsWith(currentInput)
+          );
+
+          if (
+            matchingCategory &&
+            matchingCategory.title.toLowerCase() !== currentInput
+          ) {
+            // Autofill the bracket content with the matching category
+            const newTodo =
+              todo.slice(0, openBracketPos + 1) +
+              matchingCategory.title +
+              todo.slice(closeBracketPos);
+
+            todoForm.setValue("todo", newTodo);
+
+            // Place cursor at end of autofilled category
+            setTimeout(() => {
+              const newCursorPos =
+                openBracketPos + 1 + matchingCategory.title.length;
+              inputRef.current?.setSelectionRange(newCursorPos, newCursorPos);
+            }, 0);
+            return;
+          }
+
+          // If no partial match or exact match found, proceed with category handling
+          const existingCategory = todoCategories.find(
+            (cat) => cat.title.toLowerCase() === currentInput
+          );
+
+          if (existingCategory) {
+            // If exact match found, use the existing category
+            setCategories([...categories, existingCategory]);
+          } else {
+            // If no exact match, create new category
+            setCategories([
+              ...categories,
+              {
+                id: todos.length + 1,
+                title: currentInput,
+                color: getRandomColor(),
+              },
+            ]);
+          }
+
+          // Remove the brackets and their content
           const newTodo =
             todo.slice(0, openBracketPos) + todo.slice(closeBracketPos + 1);
+
           todoForm.setValue("todo", newTodo);
 
           // Set cursor position to where the brackets were removed
