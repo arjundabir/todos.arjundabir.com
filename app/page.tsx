@@ -235,7 +235,6 @@ export default function TodoApp() {
                       addTodo();
                     }
                   }}
-                  maxLength={50}
                   className="border-0 border-b border-gray-200 rounded-none px-0 py-2 pr-8 bg-transparent focus-visible:ring-0 focus-visible:border-black placeholder:text-gray-400"
                 />
                 <button
@@ -253,7 +252,6 @@ export default function TodoApp() {
                 <p className="text-xs text-gray-400 pl-1">
                   Use [brackets] to add categories
                 </p>
-                <p className="text-xs text-gray-400">{newTodo.length}/50</p>
               </div>
             </div>
 
@@ -292,7 +290,6 @@ export default function TodoApp() {
                         onChange={(e) => setEditText(e.target.value)}
                         onBlur={saveEdit}
                         onKeyDown={handleEditKeyDown}
-                        maxLength={50}
                         className={`w-full bg-transparent border-0 border-b border-stone-200 focus:outline-none focus:border-stone-400 px-0 py-0 ${
                           todo.completed ? "text-stone-400" : ""
                         }`}
