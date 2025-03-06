@@ -194,8 +194,8 @@ export default function TodoApp() {
   };
 
   return (
-    <div className="h-[calc(100vh-40px)] flex flex-col">
-      <div className="max-h-full bg-white text-black p-6 md:p-12 lg:p-16 overflow-y-clip flex-1">
+    <div className="h-svh flex flex-col">
+      <div className="h-[calc(100svh-40px)] bg-white text-black p-6 md:p-12 lg:p-16 overflow-y-clip flex-1">
         <div className="max-w-md mx-auto space-y-12">
           <header className="pt-8">
             <div className="flex items-center justify-between">
