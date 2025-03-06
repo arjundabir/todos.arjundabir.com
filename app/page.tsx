@@ -246,7 +246,7 @@ export default function TodoApp() {
                   className="absolute right-0 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-black transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   aria-label="Add todo"
                 >
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus className="h-4 w-4" />
                 </button>
               </div>
               <div className="flex justify-between items-center">
