@@ -20,6 +20,8 @@ interface Todo {
 }
 
 export default function TodoApp() {
+  const [lebronMode, setLebronMode] = useState<boolean>(false);
+  const [containerStyle, setContainerStyle] = useState<React.CSSProperties>({});
   const [todos, setTodos] = useState<Todo[]>([]);
   const [displayedTodos, setDisplayedTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState("");
@@ -33,6 +35,17 @@ export default function TodoApp() {
   const currentDateStr = format(new Date(), "yyyy-MM-dd");
   const displayDate = format(selectedDate, "EEEE, MMMM d");
   const isCurrentDate = selectedDateStr === currentDateStr;
+
+  useEffect(() => {
+    if (lebronMode) {
+      setContainerStyle({
+        background: "url(./lebron.jpg)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      });
+    } else setContainerStyle({});
+  }, [lebronMode]);
 
   // Load all todos from localStorage on mount
   useEffect(() => {
@@ -103,8 +116,12 @@ export default function TodoApp() {
           .substring(lastOpenBracket + 1, value.length - 1)
           .trim();
         if (category) {
-          // Add to categories if not empty
-          setCurrentCategories([...currentCategories, category]);
+          if (category.toLowerCase() === "tanush") {
+            setLebronMode(!lebronMode);
+          } else {
+            // Add to categories if not empty
+            setCurrentCategories([...currentCategories, category]);
+          }
 
           // Remove the bracketed text from input
           const newValue =
@@ -195,7 +212,10 @@ export default function TodoApp() {
 
   return (
     <div className="h-svh flex flex-col">
-      <div className="h-[calc(100svh-40px)] bg-white text-black p-6 md:p-12 lg:p-16 flex-1">
+      <div
+        style={containerStyle}
+        className="h-[calc(100svh-40px)] bg-white text-black p-6 md:p-12 lg:p-16 flex-1"
+      >
         <div className="max-w-md mx-auto space-y-12 h-full flex flex-col">
           <header className="pt-8">
             <div className="flex items-center justify-between">
